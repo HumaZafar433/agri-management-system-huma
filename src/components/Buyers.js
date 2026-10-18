@@ -36,15 +36,11 @@ function Buyers({ buyers = [], onSaveBuyer, setBuyers }) {
   });
 
   const [error, setError] = useState("");
-
-  // Mask CNIC for privacy
   const maskCnic = (cnic) => {
     if (!cnic) return "Not available";
 
     return `*****-*******-${String(cnic).slice(-1)}`;
   };
-
-  // Open edit form
   const handleEdit = (buyer, index) => {
     setEditingIndex(index);
 
@@ -57,13 +53,11 @@ function Buyers({ buyers = [], onSaveBuyer, setBuyers }) {
     setError("");
   };
 
-  // Close edit form
   const closeEdit = () => {
     setEditingIndex(null);
     setError("");
   };
 
-  // Update buyer information
   const handleUpdate = () => {
 
     const name = editForm.name.trim();
@@ -98,7 +92,6 @@ function Buyers({ buyers = [], onSaveBuyer, setBuyers }) {
     closeEdit();
   };
 
-  // Delete a buyer
   const handleDelete = (index) => {
 
     const buyer = buyers[index];
@@ -128,8 +121,6 @@ function Buyers({ buyers = [], onSaveBuyer, setBuyers }) {
     >
       <Container maxWidth="xl">
 
-        {/* Page Heading */}
-
         <Box sx={{ mb: 4 }}>
           <Typography
             variant="h4"
@@ -150,16 +141,12 @@ function Buyers({ buyers = [], onSaveBuyer, setBuyers }) {
           </Typography>
         </Box>
 
-        {/* Registration Form */}
-
         <Box sx={{ mb: 4 }}>
           <BuyerForm
             buyers={buyers}
             onSaveBuyer={onSaveBuyer}
           />
         </Box>
-
-        {/* Registered Buyers Heading */}
 
         <Box
           sx={{
@@ -195,8 +182,6 @@ function Buyers({ buyers = [], onSaveBuyer, setBuyers }) {
           />
         </Box>
 
-        {/* Empty State */}
-
         {buyers.length === 0 && (
           <Card
             sx={{
@@ -212,9 +197,6 @@ function Buyers({ buyers = [], onSaveBuyer, setBuyers }) {
             </Typography>
           </Card>
         )}
-
-        {/* MOBILE VIEW: Buyer Cards */}
-
         {buyers.length > 0 && (
           <Box
             sx={{
@@ -237,9 +219,6 @@ function Buyers({ buyers = [], onSaveBuyer, setBuyers }) {
                 }}
               >
                 <CardContent sx={{ p: 2.5 }}>
-
-                  {/* Buyer Photo and Name */}
-
                   <Box
                     sx={{
                       display: "flex",
@@ -277,8 +256,6 @@ function Buyers({ buyers = [], onSaveBuyer, setBuyers }) {
                       />
                     </Box>
                   </Box>
-
-                  {/* Buyer Details */}
 
                   <Box
                     sx={{
@@ -372,8 +349,6 @@ function Buyers({ buyers = [], onSaveBuyer, setBuyers }) {
             ))}
           </Box>
         )}
-
-        {/* DESKTOP VIEW: Buyers Table */}
 
         {buyers.length > 0 && (
           <Card
@@ -492,8 +467,6 @@ function Buyers({ buyers = [], onSaveBuyer, setBuyers }) {
             </TableContainer>
           </Card>
         )}
-
-        {/* Edit Buyer Dialog */}
 
         <Dialog
           open={editingIndex !== null}
