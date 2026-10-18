@@ -16,9 +16,6 @@ function SupplierOrders({ orders = [], onMarkDelivered }) {
 
   return (
     <Box sx={{ width: "100%" }}>
-
-      {/* Heading */}
-
       <Box sx={{ mb: 3 }}>
         <Typography
           variant="h5"
@@ -32,9 +29,6 @@ function SupplierOrders({ orders = [], onMarkDelivered }) {
           Track customer orders and manage deliveries.
         </Typography>
       </Box>
-
-      {/* No Orders Message */}
-
       {orders.length === 0 && (
         <Paper
           sx={{
@@ -50,9 +44,6 @@ function SupplierOrders({ orders = [], onMarkDelivered }) {
           </Typography>
         </Paper>
       )}
-
-      {/* MOBILE VIEW */}
-
       {orders.length > 0 && (
         <Box
           sx={{
@@ -75,9 +66,6 @@ function SupplierOrders({ orders = [], onMarkDelivered }) {
                 boxShadow: "0 4px 16px rgba(0,0,0,0.05)"
               }}
             >
-
-              {/* Buyer Name */}
-
               <Box
                 sx={{
                   display: "flex",
@@ -107,9 +95,6 @@ function SupplierOrders({ orders = [], onMarkDelivered }) {
                   size="small"
                 />
               </Box>
-
-              {/* Order Details */}
-
               <Box
                 sx={{
                   bgcolor: "#f5f8f5",
@@ -160,8 +145,6 @@ function SupplierOrders({ orders = [], onMarkDelivered }) {
 
               </Box>
 
-              {/* Order Action */}
-
               {order.status === "Pending" ? (
 
                 <Button
@@ -197,8 +180,6 @@ function SupplierOrders({ orders = [], onMarkDelivered }) {
           ))}
         </Box>
       )}
-
-      {/* DESKTOP VIEW */}
 
       {orders.length > 0 && (
         <TableContainer
