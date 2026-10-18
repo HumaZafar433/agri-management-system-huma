@@ -1,6 +1,5 @@
-import React from "react";
 import {
-  Container,
+  Box,
   Typography,
   Paper,
   Table,
@@ -10,61 +9,244 @@ import {
   TableHead,
   TableRow,
   Chip,
-  Box,
   Button
 } from "@mui/material";
 
-function SupplierOrders({ orders, onMarkDelivered }) {
-  return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
+function SupplierOrders({ orders = [], onMarkDelivered }) {
 
-      <Box sx={{ mb: 4 }}>
+  return (
+    <Box sx={{ width: "100%" }}>
+
+      {/* Heading */}
+
+      <Box sx={{ mb: 3 }}>
         <Typography
-          variant="h4"
+          variant="h5"
           fontWeight="bold"
-          color="#1b5e20"
+          sx={{ color: "#183b29" }}
         >
           Supplier Orders
         </Typography>
 
         <Typography color="text.secondary">
-          Manage crop orders and delivery requests
+          Track customer orders and manage deliveries.
         </Typography>
       </Box>
 
-      <TableContainer
-        component={Paper}
-        sx={{ borderRadius: 3, boxShadow: 2 }}
-      >
-        <Table>
+      {/* No Orders Message */}
 
-          <TableHead sx={{ backgroundColor: "#e8f5e9" }}>
-            <TableRow>
-              <TableCell><b>Customer Name</b></TableCell>
-              <TableCell><b>Crop</b></TableCell>
-              <TableCell><b>Quantity</b></TableCell>
-              <TableCell><b>Status</b></TableCell>
-              <TableCell><b>Action</b></TableCell>
-            </TableRow>
-          </TableHead>
+      {orders.length === 0 && (
+        <Paper
+          sx={{
+            p: 4,
+            textAlign: "center",
+            borderRadius: 3,
+            border: "1px solid #e3ebe4",
+            boxShadow: "none"
+          }}
+        >
+          <Typography color="text.secondary">
+            No orders available yet.
+          </Typography>
+        </Paper>
+      )}
 
-          <TableBody>
-            {orders.length === 0 ? (
+      {/* MOBILE VIEW */}
+
+      {orders.length > 0 && (
+        <Box
+          sx={{
+            display: {
+              xs: "grid",
+              md: "none"
+            },
+            gridTemplateColumns: "1fr",
+            gap: 2
+          }}
+        >
+          {orders.map((order) => (
+
+            <Paper
+              key={order.id}
+              sx={{
+                p: 2.5,
+                borderRadius: 3,
+                border: "1px solid #e3ebe4",
+                boxShadow: "0 4px 16px rgba(0,0,0,0.05)"
+              }}
+            >
+
+              {/* Buyer Name */}
+
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "flex-start",
+                  gap: 1,
+                  mb: 2
+                }}
+              >
+                <Typography
+                  fontWeight="bold"
+                  sx={{
+                    color: "#183b29",
+                    overflowWrap: "anywhere"
+                  }}
+                >
+                  {order.name}
+                </Typography>
+
+                <Chip
+                  label={order.status}
+                  color={
+                    order.status === "Delivered"
+                      ? "success"
+                      : "warning"
+                  }
+                  size="small"
+                />
+              </Box>
+
+              {/* Order Details */}
+
+              <Box
+                sx={{
+                  bgcolor: "#f5f8f5",
+                  borderRadius: 2,
+                  p: 2,
+                  mb: 2
+                }}
+              >
+
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                >
+                  Crop
+                </Typography>
+
+                <Typography
+                  fontWeight={600}
+                  sx={{ mb: 2 }}
+                >
+                  {order.crop}
+                </Typography>
+
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                >
+                  Quantity
+                </Typography>
+
+                <Typography
+                  fontWeight={600}
+                  sx={{ mb: 2 }}
+                >
+                  {order.quantity} kg
+                </Typography>
+
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                >
+                  Order Date
+                </Typography>
+
+                <Typography fontWeight={600}>
+                  {order.orderDate || "Not recorded"}
+                </Typography>
+
+              </Box>
+
+              {/* Order Action */}
+
+              {order.status === "Pending" ? (
+
+                <Button
+                  fullWidth
+                  variant="contained"
+                  onClick={() => onMarkDelivered(order.id)}
+                  sx={{
+                    bgcolor: "#1b5e20",
+                    textTransform: "none",
+                    fontWeight: "bold",
+                    "&:hover": {
+                      bgcolor: "#12451a"
+                    }
+                  }}
+                >
+                  Mark Delivered
+                </Button>
+
+              ) : (
+
+                <Typography
+                  color="success.main"
+                  fontWeight={600}
+                  textAlign="center"
+                >
+                  Order Completed
+                </Typography>
+
+              )}
+
+            </Paper>
+
+          ))}
+        </Box>
+      )}
+
+      {/* DESKTOP VIEW */}
+
+      {orders.length > 0 && (
+        <TableContainer
+          component={Paper}
+          sx={{
+            display: {
+              xs: "none",
+              md: "block"
+            },
+            borderRadius: 3,
+            border: "1px solid #e3ebe4",
+            boxShadow: "0 4px 18px rgba(0,0,0,0.05)"
+          }}
+        >
+
+          <Table sx={{ minWidth: 750 }}>
+
+            <TableHead sx={{ bgcolor: "#e8f5e9" }}>
               <TableRow>
-                <TableCell colSpan={5} align="center">
-                  No orders available
-                </TableCell>
+                <TableCell><b>Buyer Name</b></TableCell>
+                <TableCell><b>Crop</b></TableCell>
+                <TableCell><b>Quantity</b></TableCell>
+                <TableCell><b>Order Date</b></TableCell>
+                <TableCell><b>Status</b></TableCell>
+                <TableCell><b>Action</b></TableCell>
               </TableRow>
-            ) : (
-              orders.map((order) => (
+            </TableHead>
+
+            <TableBody>
+
+              {orders.map((order) => (
+
                 <TableRow key={order.id} hover>
 
-                  <TableCell>{order.name}</TableCell>
+                  <TableCell>
+                    {order.name}
+                  </TableCell>
 
-                  <TableCell>{order.crop}</TableCell>
+                  <TableCell>
+                    {order.crop}
+                  </TableCell>
 
                   <TableCell>
                     {order.quantity} kg
+                  </TableCell>
+
+                  <TableCell>
+                    {order.orderDate || "Not recorded"}
                   </TableCell>
 
                   <TableCell>
@@ -80,34 +262,47 @@ function SupplierOrders({ orders, onMarkDelivered }) {
                   </TableCell>
 
                   <TableCell>
+
                     {order.status === "Pending" ? (
+
                       <Button
                         variant="contained"
                         color="success"
                         size="small"
-                        onClick={() => onMarkDelivered(order.id)}
+                        onClick={() =>
+                          onMarkDelivered(order.id)
+                        }
+                        sx={{ textTransform: "none" }}
                       >
                         Mark Delivered
                       </Button>
+
                     ) : (
+
                       <Typography
                         variant="body2"
                         color="success.main"
+                        fontWeight={600}
                       >
                         Completed
                       </Typography>
+
                     )}
+
                   </TableCell>
 
                 </TableRow>
-              ))
-            )}
-          </TableBody>
 
-        </Table>
-      </TableContainer>
+              ))}
 
-    </Container>
+            </TableBody>
+
+          </Table>
+
+        </TableContainer>
+      )}
+
+    </Box>
   );
 }
 

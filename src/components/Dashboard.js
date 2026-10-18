@@ -1,136 +1,173 @@
-import React from "react";
-
 import {
   Box,
   Container,
   Typography,
   Card,
   CardContent,
-  Chip
+  Chip,
+  LinearProgress
 } from "@mui/material";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
-import {
-  faDroplet,
-  faSeedling,
-  faTemperatureHigh,
-  faSun,
-  faCloud,
-  faCloudRain,
-  faChartLine,
-  faClipboardList,
-  faClock,
-  faTruckFast
-} from "@fortawesome/free-solid-svg-icons";
-
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer
-} from "recharts";
+import WeatherCard from "./WeatherCard";
 
 
-function Dashboard({ orders = [] }) {
+const cardStyle = {
+  borderRadius: 3,
+  border: "1px solid #e2ebe4",
+  boxShadow: "0 5px 20px rgba(20, 50, 30, 0.05)",
+  backgroundColor: "#ffffff"
+};
 
-  const cropData = [
+const getHealthStatus = (crop) => {
+  const score = Number(crop.healthScore || 0);
+
+  if (score >= 70) return "Healthy";
+  if (score >= 40) return "Needs Attention";
+
+  return "Critical";
+};
+
+function Dashboard({ crops = [], orders = [] }) {
+
+  const totalCrops = crops.length;
+
+  const healthyCrops = crops.filter(
+    (crop) => getHealthStatus(crop) === "Healthy"
+  ).length;
+
+  const attentionCrops = crops.filter(
+    (crop) => getHealthStatus(crop) === "Needs Attention"
+  ).length;
+
+  const criticalCrops = crops.filter(
+    (crop) => getHealthStatus(crop) === "Critical"
+  ).length;
+
+  const stats = [
     {
-      title: "Soil Humidity",
-      value: "65%",
-      description: "Moisture level",
-      icon: faDroplet,
-      color: "#0288d1",
-      background: "#e3f2fd"
-    },
-    {
-      title: "Today's Crop Growth",
-      value: "4.2 cm",
-      description: "Daily growth recorded",
-      icon: faSeedling,
-      color: "#2e7d32",
+      title: "Crops Monitored",
+      value: totalCrops,
+      detail: "Total crops in the system",
+      color: "#1b5e20",
       background: "#e8f5e9"
     },
     {
-      title: "Temperature",
-      value: "28°C",
-      description: "Sunny conditions",
-      icon: faTemperatureHigh,
-      color: "#ed6c02",
+      title: "Crops to Review",
+      value: attentionCrops + criticalCrops,
+      detail: "Crops requiring attention",
+      color: "#e65100",
       background: "#fff3e0"
+    },
+    {
+      title: "Orders Received",
+      value: orders.length,
+      detail: "Total customer orders",
+      color: "#1565c0",
+      background: "#e3f2fd"
     }
   ];
 
-  const growthData = [
-    { day: "Mon", growth: 2.1 },
-    { day: "Tue", growth: 2.5 },
-    { day: "Wed", growth: 2.3 },
-    { day: "Thu", growth: 3.1 },
-    { day: "Fri", growth: 3.4 },
-    { day: "Sat", growth: 3.8 },
-    { day: "Sun", growth: 4.2 }
-  ];
-
-  const weatherData = [
+  const healthGroups = [
     {
-      day: "Tomorrow",
-      weather: "Sunny",
-      temperature: "29°C",
-      icon: faSun,
-      color: "#f59e0b"
+      label: "Healthy",
+      count: healthyCrops,
+      color: "#2e7d32"
     },
     {
-      day: "Day 2",
-      weather: "Cloudy",
-      temperature: "26°C",
-      icon: faCloud,
-      color: "#64748b"
+      label: "Needs Attention",
+      count: attentionCrops,
+      color: "#ef6c00"
     },
     {
-      day: "Day 3",
-      weather: "Rainy",
-      temperature: "24°C",
-      icon: faCloudRain,
-      color: "#0288d1"
+      label: "Critical",
+      count: criticalCrops,
+      color: "#d32f2f"
     }
   ];
 
-  const totalOrders = orders.length;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
-  const pendingOrders = orders.filter(
-    (order) => order.status === "Pending"
-  ).length;
+  const harvests = crops
+    .map((crop) => {
+      const date = crop.cuttingDate || crop.harvestDate;
 
-  const deliveredOrders = orders.filter(
-    (order) => order.status === "Delivered"
-  ).length;
+      if (!date) return null;
+
+      const cuttingDate = new Date(date + "T00:00:00");
+
+      if (Number.isNaN(cuttingDate.getTime())) {
+        return null;
+      }
+
+      const daysLeft = Math.round(
+        (cuttingDate - today) / 86400000
+      );
+
+      return {
+        ...crop,
+        cuttingDate: date,
+        daysLeft
+      };
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.daysLeft - b.daysLeft)
+    .slice(0, 2);
+
+  // Harvest status
+  const getHarvestStatus = (days) => {
+    if (days < 0) {
+      return {
+        label: "Overdue",
+        color: "error"
+      };
+    }
+
+    if (days <= 3) {
+      return {
+        label: "Due Soon",
+        color: "warning"
+      };
+    }
+
+    return {
+      label: "Scheduled",
+      color: "success"
+    };
+  };
 
   return (
-    <Box sx={{ backgroundColor: "#f5f8f5", minHeight: "100vh" }}>
-
-      <Container maxWidth="xl" sx={{ py: 4, px: { xs: 2, md: 5 } }}>
-
-        {/* Dashboard Header */}
+    <Box
+      sx={{
+        backgroundColor: "#f5f8f5",
+        minHeight: "100vh"
+      }}
+    >
+      <Container
+        maxWidth="xl"
+        sx={{
+          px: { xs: 2, md: 4 },
+          py: 4
+        }}
+      >
 
         <Box
           sx={{
-            background: "linear-gradient(120deg, #123524, #287344)",
-            color: "white",
-            borderRadius: 4,
-            p: { xs: 3, md: 4 },
-            mb: 4,
-            boxShadow: "0 10px 25px rgba(18,53,36,0.15)"
+            background:
+              "linear-gradient(110deg, #153c2b 0%, #256c45 100%)",
+            color: "#ffffff",
+            borderRadius: 3,
+            px: { xs: 3, md: 4 },
+            py: { xs: 3, md: 4 },
+            mb: 3
           }}
         >
           <Chip
-            label="CROP INTELLIGENCE"
+            label="FARM MONITORING"
             size="small"
             sx={{
-              backgroundColor: "rgba(255,255,255,0.15)",
               color: "white",
+              bgcolor: "rgba(255,255,255,0.15)",
               mb: 2,
               fontWeight: 600
             }}
@@ -138,234 +175,188 @@ function Dashboard({ orders = [] }) {
 
           <Typography
             variant="h4"
-            fontWeight="bold"
+            fontWeight={700}
             sx={{ mb: 1 }}
           >
             Farm Overview
           </Typography>
 
-         <Typography sx={{ color: "#d7eadd", mb: 2 }}>
-           Monitor your crops, track growth and manage farm operations.
-          </Typography>
-
           <Typography
-            variant="body2"
-            sx={{ color: "#c7dfce" }}
+            sx={{
+              color: "#d7eadc",
+              maxWidth: 650,
+              lineHeight: 1.7
+            }}
           >
-            Crop monitoring values shown below are demo data.
+            Monitor crop conditions, weather updates and
+            important farm activities from one dashboard.
           </Typography>
         </Box>
 
-
-        {/* Crop Monitoring Cards */}
 
         <Box
           sx={{
             display: "grid",
             gridTemplateColumns: {
               xs: "1fr",
-              sm: "repeat(2, 1fr)",
-              md: "repeat(3, 1fr)"
+              sm: "repeat(3, minmax(0, 1fr))"
             },
-            gap: 3,
-            mb: 4
+            gap: 2.5,
+            mb: 3
           }}
         >
-          {cropData.map((item) => (
+          {stats.map((item) => (
             <Card
               key={item.title}
-              sx={{
-                borderRadius: 3,
-                boxShadow: "0 4px 18px rgba(0,0,0,0.05)",
-                border: "1px solid #e8eee8"
-              }}
+              sx={cardStyle}
             >
               <CardContent sx={{ p: 3 }}>
-
-                <Box
-                  sx={{
-                    width: 52,
-                    height: 52,
-                    borderRadius: 3,
-                    backgroundColor: item.background,
-                    color: item.color,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 24,
-                    mb: 3
-                  }}
-                >
-                  <FontAwesomeIcon icon={item.icon} />
-                </Box>
-
                 <Typography
-                  variant="body2"
                   color="text.secondary"
-                  sx={{ mb: 1 }}
+                  variant="body2"
+                  fontWeight={500}
                 >
                   {item.title}
                 </Typography>
 
                 <Typography
                   variant="h4"
-                  fontWeight="bold"
-                  sx={{ color: "#183b29", mb: 1 }}
+                  fontWeight={700}
+                  sx={{
+                    color: item.color,
+                    my: 1.5
+                  }}
                 >
                   {item.value}
                 </Typography>
 
                 <Typography
                   variant="body2"
-                  color="text.secondary"
+                  sx={{ color: "#66736a" }}
                 >
-                  {item.description}
+                  {item.detail}
                 </Typography>
-
               </CardContent>
             </Card>
           ))}
         </Box>
 
+        <Box sx={{ mb: 3 }}>
+          <WeatherCard />
+        </Box>
 
-        {/* Growth Chart and Weather Forecast */}
 
         <Box
           sx={{
             display: "grid",
             gridTemplateColumns: {
               xs: "1fr",
-              lg: "1.7fr 1fr"
+              md: "repeat(2, minmax(0, 1fr))"
             },
             gap: 3,
-            mb: 4
+            mb: 2
           }}
         >
 
-          {/* Growth Chart */}
 
-          <Card
-            sx={{
-              borderRadius: 3,
-              boxShadow: "0 4px 18px rgba(0,0,0,0.05)",
-              border: "1px solid #e8eee8"
-            }}
-          >
-            <CardContent sx={{ p: 3 }}>
-
-              <Box
+          <Card sx={cardStyle}>
+            <CardContent
+              sx={{
+                p: 3.5,
+                height: "100%"
+              }}
+            >
+              <Typography
+                variant="h6"
+                fontWeight={700}
                 sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 1.5,
+                  color: "#183b29",
                   mb: 1
                 }}
               >
-                <FontAwesomeIcon
-                  icon={faChartLine}
-                  style={{ color: "#2e7d32" }}
-                />
-
-                <Typography
-                  variant="h6"
-                  fontWeight="bold"
-                >
-                  Crop Growth Analytics
-                </Typography>
-              </Box>
+                Crop Health Overview
+              </Typography>
 
               <Typography
                 variant="body2"
                 color="text.secondary"
                 sx={{ mb: 4 }}
               >
-                Weekly crop growth trend (cm)
+                Health distribution of monitored crops.
               </Typography>
 
-              <Box sx={{ width: "100%", height: 280 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart
-                    data={growthData}
-                    margin={{ top: 10, right: 10, left: -15, bottom: 0 }}
+              {healthGroups.map((group) => {
+                const percentage =
+                  totalCrops > 0
+                    ? (group.count / totalCrops) * 100
+                    : 0;
+
+                return (
+                  <Box
+                    key={group.label}
+                    sx={{ mb: 3 }}
                   >
-                    <defs>
-                      <linearGradient
-                        id="growthGradient"
-                        x1="0"
-                        y1="0"
-                        x2="0"
-                        y2="1"
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        mb: 1
+                      }}
+                    >
+                      <Typography fontWeight={500}>
+                        {group.label}
+                      </Typography>
+
+                      <Typography
+                        fontWeight={600}
+                        sx={{ color: "#183b29" }}
                       >
-                        <stop
-                          offset="5%"
-                          stopColor="#43a047"
-                          stopOpacity={0.35}
-                        />
-                        <stop
-                          offset="95%"
-                          stopColor="#43a047"
-                          stopOpacity={0.02}
-                        />
-                      </linearGradient>
-                    </defs>
+                        {group.count}{" "}
+                        {group.count === 1 ? "Crop" : "Crops"}
+                      </Typography>
+                    </Box>
 
-                    <CartesianGrid
-                      strokeDasharray="3 3"
-                      vertical={false}
+                    <LinearProgress
+                      variant="determinate"
+                      value={percentage}
+                      sx={{
+                        height: 10,
+                        borderRadius: 5,
+                        bgcolor: "#e9efea",
+                        "& .MuiLinearProgress-bar": {
+                          backgroundColor: group.color,
+                          borderRadius: 5
+                        }
+                      }}
                     />
+                  </Box>
+                );
+              })}
 
-                    <XAxis
-                      dataKey="day"
-                      tickLine={false}
-                      axisLine={false}
-                    />
-
-                    <YAxis
-                      tickLine={false}
-                      axisLine={false}
-                      domain={[0, 5]}
-                      tickFormatter={(value) => `${value}`}
-                    />
-
-                    <Tooltip
-                      formatter={(value) => [`${value} cm`, "Growth"]}
-                    />
-
-                    <Area
-                      type="monotone"
-                      dataKey="growth"
-                      stroke="#2e7d32"
-                      strokeWidth={3}
-                      fill="url(#growthGradient)"
-                      dot={{ r: 4, fill: "#2e7d32" }}
-                      activeDot={{ r: 6 }}
-                    />
-
-                  </AreaChart>
-                </ResponsiveContainer>
-              </Box>
-
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ mt: 3 }}
+              >
+                Detailed crop records are available
+                in the Crops section.
+              </Typography>
             </CardContent>
           </Card>
 
 
-          {/* Weather Forecast */}
-
-          <Card
-            sx={{
-              borderRadius: 3,
-              boxShadow: "0 4px 18px rgba(0,0,0,0.05)",
-              border: "1px solid #e8eee8"
-            }}
-          >
-            <CardContent sx={{ p: 3 }}>
-
+          <Card sx={cardStyle}>
+            <CardContent sx={{ p: 3.5 }}>
               <Typography
                 variant="h6"
-                fontWeight="bold"
-                sx={{ mb: 1 }}
+                fontWeight={700}
+                sx={{
+                  color: "#183b29",
+                  mb: 1
+                }}
               >
-                Weather Forecast
+                Harvest Priorities
               </Typography>
 
               <Typography
@@ -373,156 +364,98 @@ function Dashboard({ orders = [] }) {
                 color="text.secondary"
                 sx={{ mb: 3 }}
               >
-                Upcoming 3 days
+                Cutting dates that need attention first.
               </Typography>
 
-              {weatherData.map((item) => (
-                <Box
-                  key={item.day}
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    backgroundColor: "#f8faf8",
-                    border: "1px solid #edf0ed",
-                    borderRadius: 2,
-                    p: 2,
-                    mb: 2
-                  }}
-                >
+              {harvests.length === 0 && (
+                <Typography color="text.secondary">
+                  No harvest dates recorded yet.
+                </Typography>
+              )}
 
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              {harvests.map((crop) => {
+                const status = getHarvestStatus(crop.daysLeft);
 
+                return (
+                  <Box
+                    key={crop.id}
+                    sx={{
+                      backgroundColor: "#f7faf7",
+                      border: "1px solid #e2ebe4",
+                      borderRadius: 2,
+                      p: 2.5,
+                      mb: 2
+                    }}
+                  >
                     <Box
                       sx={{
-                        fontSize: 25,
-                        color: item.color,
-                        width: 32,
-                        textAlign: "center"
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        flexWrap: "wrap",
+                        gap: 1,
+                        mb: 1
                       }}
                     >
-                      <FontAwesomeIcon icon={item.icon} />
-                    </Box>
-
-                    <Box>
-                      <Typography fontWeight="600">
-                        {item.day}
-                      </Typography>
-
                       <Typography
-                        variant="body2"
-                        color="text.secondary"
+                        fontWeight={700}
+                        sx={{ color: "#183b29" }}
                       >
-                        {item.weather}
+                        {crop.name}
                       </Typography>
+
+                      <Chip
+                        label={status.label}
+                        color={status.color}
+                        size="small"
+                      />
                     </Box>
 
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                    >
+                      {crop.field}
+                    </Typography>
+
+                    <Typography
+                      variant="body2"
+                      sx={{ mt: 1.5 }}
+                    >
+                      Cutting Date: {crop.cuttingDate}
+                    </Typography>
+
+                    <Typography
+                      variant="body2"
+                      fontWeight={600}
+                      sx={{
+                        mt: 0.5,
+                        color:
+                          crop.daysLeft < 0
+                            ? "#c62828"
+                            : "#2e7d32"
+                      }}
+                    >
+                      {crop.daysLeft < 0
+                        ? `${Math.abs(crop.daysLeft)} days overdue`
+                        : crop.daysLeft === 0
+                          ? "Scheduled for today"
+                          : `${crop.daysLeft} days remaining`}
+                    </Typography>
                   </Box>
+                );
+              })}
 
-                  <Typography
-                    variant="h6"
-                    fontWeight="bold"
-                    sx={{ color: "#183b29" }}
-                  >
-                    {item.temperature}
-                  </Typography>
-
-                </Box>
-              ))}
-
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ mt: 2 }}
+              >
+                View the complete cutting schedule
+                in Harvest & Orders.
+              </Typography>
             </CardContent>
           </Card>
-
-        </Box>
-
-
-        {/* Orders Overview */}
-
-        <Typography
-          variant="h6"
-          fontWeight="bold"
-          sx={{ color: "#183b29", mb: 2 }}
-        >
-          Farm Activity Overview
-        </Typography>
-
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: {
-              xs: "1fr",
-              md: "repeat(3, 1fr)"
-            },
-            gap: 3
-          }}
-        >
-
-          {[
-            {
-              title: "Total Orders",
-              value: totalOrders,
-              icon: faClipboardList,
-              color: "#2e7d32"
-            },
-            {
-              title: "Pending Orders",
-              value: pendingOrders,
-              icon: faClock,
-              color: "#ed6c02"
-            },
-            {
-              title: "Delivered Orders",
-              value: deliveredOrders,
-              icon: faTruckFast,
-              color: "#0288d1"
-            }
-          ].map((item) => (
-            <Card
-              key={item.title}
-              sx={{
-                borderRadius: 3,
-                boxShadow: "0 4px 18px rgba(0,0,0,0.05)",
-                border: "1px solid #e8eee8"
-              }}
-            >
-              <CardContent
-                sx={{
-                  p: 3,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between"
-                }}
-              >
-
-                <Box>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                  >
-                    {item.title}
-                  </Typography>
-
-                  <Typography
-                    variant="h4"
-                    fontWeight="bold"
-                    sx={{ mt: 1 }}
-                  >
-                    {item.value}
-                  </Typography>
-                </Box>
-
-                <Box
-                  sx={{
-                    fontSize: 26,
-                    color: item.color
-                  }}
-                >
-                  <FontAwesomeIcon icon={item.icon} />
-                </Box>
-
-              </CardContent>
-            </Card>
-          ))}
 
         </Box>
 
