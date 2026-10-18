@@ -1,70 +1,69 @@
-# Getting Started with Create React App
+# AgriVista Ventures
+## Agriculture Management System
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+AgriVista Ventures is a responsive agriculture management
+web application developed using React.js.
 
-## Available Scripts
+The system helps farm managers monitor crop health,
+manage harvest schedules, register buyers, track orders
+and calculate available stock.
 
-In the project directory, you can run:
+## Features
 
-### `npm start`
+- Professional farm dashboard
+- Live weather information and 3-day forecast
+- Crop health monitoring
+- Add, edit, delete and search crops
+- Harvest cutting schedule
+- Buyer registration with CNIC validation
+- Buyer photo upload and preview
+- Buyer records management
+- Crop order placement
+- Pending and delivered order tracking
+- Harvested, reserved, sold and remaining stock
+- Responsive desktop and mobile layouts
+- Browser localStorage for data persistence
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Technologies Used
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- React.js
+- JavaScript
+- HTML5 and CSS3
+- Bootstrap 5
+- Material UI
+- Font Awesome
+- Live Weather API
+- Git and GitHub
 
-### `npm test`
+## How to Run
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. Download or clone the repository.
+2. Open the project folder in VS Code.
+3. Open the terminal.
+4. Install dependencies:
 
-### `npm run build`
+   npm install
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+5. Start the application:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+   npm start
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+6. Open http://localhost:3000
 
-### `npm run eject`
+## Data Storage
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+The application uses browser localStorage to save
+crop records, buyer information and orders.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+No backend or database is required.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Project Information
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Project: Agriculture Management System
 
-## Learn More
+## Developer Information
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Developed by: Huma Zafar
+Internship: Frontend Developer
+Batch: 6
+Project: AgriVista Ventures
